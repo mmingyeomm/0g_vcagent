@@ -4,6 +4,7 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger';
 import dotenv from 'dotenv';
 import { initializeApplication } from './startup';
+import { brokerService } from './services/brokerService';
 
 // Import routes
 import accountRoutes from './routes/accountRoutes';
@@ -34,16 +35,40 @@ app.use(`${apiPrefix}/account`, accountRoutes);
 app.use(`${apiPrefix}/services`, serviceRoutes);
 
 // Root route with basic info
-app.get('/', (req, res) => {
-  res.json({
-    name: '0G Compute Network API',
-    version: '1.0.0',
-    documentation: '/docs',
-    endpoints: {
-      account: `${apiPrefix}/account`,
-      services: `${apiPrefix}/services`,
-    }
-  });
+app.get('/', async (req, res) => {
+  try {
+    const services = await brokerService.listServices();
+    const formattedServices = services.map(service => ({
+      providerAddress: service[0],
+      serviceType: service[1],
+      endpoint: service[2],
+      model: service[6],
+      providerName: service[7]
+    }));
+
+    res.json({
+      name: '0G Compute Network API',
+      version: '1.0.0',
+      documentation: '/docs',
+      endpoints: {
+        account: `${apiPrefix}/account`,
+        services: `${apiPrefix}/services`,
+      },
+      availableServices: formattedServices
+    });
+  } catch (error) {
+    console.error('Error fetching services:', error);
+    res.status(500).json({
+      name: '0G Compute Network API',
+      version: '1.0.0',
+      documentation: '/docs',
+      endpoints: {
+        account: `${apiPrefix}/account`,
+        services: `${apiPrefix}/services`,
+      },
+      error: 'Failed to fetch available services'
+    });
+  }
 });
 
 // Simple error handler
