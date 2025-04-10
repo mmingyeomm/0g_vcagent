@@ -29,7 +29,7 @@ const convertBigIntToString = (data: any): any => {
 export const connectWallet = async (req: Request, res: Response) => {
     try {
         const { privateKey } = req.body;
-        
+            
         if (!privateKey) {
             return res.status(400).json({
                 success: false,
@@ -39,7 +39,12 @@ export const connectWallet = async (req: Request, res: Response) => {
 
         // 지갑 연결 로직 구현
         const balance = await brokerService.getBalance();
+        
         const serializedBalance = convertBigIntToString(balance);
+
+        // debugging log
+        console.log('Received private key:', privateKey ? privateKey : 'No private key');
+        console.log('Serialized balance:', serializedBalance);
         
         res.json({
             success: true,

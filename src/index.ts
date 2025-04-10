@@ -89,18 +89,25 @@ app.get('/', async (req, res) => {
 });
 
 // 지갑 연결 엔드포인트 추가
-app.get('/connect', async (req, res) => {
+app.post('/connect', async (req, res) => {
   try {
-    req.body = {
-      privateKey: 0 // 0x + <wallet address>
-    };
+    console.log('wallet connect request', {
+      body: req.body,
+      method: req.method,
+      url: req.url
+    });
+    
+    // connectWallet 함수가 이미 응답을 보내므로, 여기서는 에러 처리만 합니다
     await connectWallet(req, res);
   } catch (error) {
     console.error('Error connecting wallet:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to connect wallet'
-    });
+    // 이미 응답이 보내졌는지 확인
+    if (!res.headersSent) {
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to connect wallet'
+      });
+    }
   }
 });
 
