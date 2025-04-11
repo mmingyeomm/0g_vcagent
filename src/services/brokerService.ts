@@ -133,7 +133,10 @@ class BrokerService {
     try {
       // Get the service metadata
       const { endpoint, model } = await this.broker!.inference.getServiceMetadata(providerAddress);
-      
+
+      // for debugging
+      console.log(endpoint, model);
+
       // Get headers for authentication
       const headers = await this.broker!.inference.getRequestHeaders(providerAddress, query);
       
@@ -147,6 +150,8 @@ class BrokerService {
       const requestHeaders: Record<string, string> = {};
       Object.entries(headers).forEach(([key, value]) => {
         if (typeof value === 'string') {
+          // for debugging
+          console.log(key, value);
           requestHeaders[key] = value;
         }
       });
@@ -154,7 +159,10 @@ class BrokerService {
       // Make the API request
       const completion = await openai.chat.completions.create(
         {
-          messages: [{ role: "user", content: query }],
+          messages: [
+            { role: "system", content: "{프롬프트}" },  
+            { role: "user", content: query }
+          ],
           model, // Use the model from metadata
         },
         {

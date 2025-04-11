@@ -3,6 +3,7 @@ import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger';
 import dotenv from 'dotenv';
+import axios from 'axios';
 import { initializeApplication } from './startup';
 import { brokerService } from './services/brokerService';
 import { getAccountInfo } from './controllers/accountController';
@@ -12,6 +13,7 @@ import { connectWallet } from './controllers/walletControllers';
 import accountRoutes from './routes/accountRoutes';
 import serviceRoutes from './routes/serviceRoutes';
 import walletRoutes from './routes/walletRoutes';
+import { off } from 'process';
 
 // Load environment variables
 dotenv.config();
@@ -38,7 +40,7 @@ app.use(`${apiPrefix}/account`, accountRoutes);
 app.use(`${apiPrefix}/services`, serviceRoutes);
 app.use(`${apiPrefix}/wallet`, walletRoutes);
 
-// Root route with basic info
+// you can check available 0g AI services
 app.get('/tmp', async (req, res) => {
   try {
     const services = await brokerService.listServices();
@@ -88,26 +90,128 @@ app.get('/', async (req, res) => {
   }
 });
 
-// 지갑 연결 엔드포인트 추가
-app.post('/connect', async (req, res) => {
+
+// 폐기
+// // 지갑 연결 엔드포인트 추가
+// app.post('/connect', async (req, res) => {
+//   try {
+//     console.log('wallet connect request', {
+//       body: req.body,
+//       method: req.method,
+//       url: req.url
+//     });
+    
+//     // connectWallet 함수가 이미 응답을 보내므로, 여기서는 에러 처리만 합니다
+//     await connectWallet(req, res);
+//   } catch (error) {
+//     console.error('Error connecting wallet:', error);
+//     // 이미 응답이 보내졌는지 확인
+//     if (!res.headersSent) {
+//       return res.status(500).json({
+//         success: false,
+//         error: 'Failed to connect wallet'
+//       });
+//     }
+//   }
+// });
+
+
+// AI query 잘 가는지 테스트
+app.get('/test', async (req, res) => {
+  const DeepSeek_Addr = '0x3feE5a4dd5FDb8a32dDA97Bed899830605dBD9D3';
+
+  await brokerService.settleFee(DeepSeek_Addr, 0.000000000000000159);
+  console.log('fee settled');
+  const aiResponse = await brokerService.sendQuery(
+    DeepSeek_Addr,
+    'hello'
+  );
+  console.log('AI response:', aiResponse);
+  res.json({
+    success: true,
+    originalData: aiResponse,
+  });
+});
+
+
+
+interface Fund {
+  id: number;
+  key: string;
+  name: string;
+  tier: number | null;
+  type: string | null;
+}
+
+// bring dapp data through dappradar api
+app.get('/dapps', async (req, res) => {
   try {
-    console.log('wallet connect request', {
-      body: req.body,
-      method: req.method,
-      url: req.url
+    const response = await axios.get('https://apis.dappradar.com/v2//dapps', {
+      headers: {
+        'X-API-KEY' : process.env.DAPP_RADAR_API_KEY!
+      },
+      params: {
+        'chain' : 'ethereum',
+        'page' : 200
+      }
     });
     
-    // connectWallet 함수가 이미 응답을 보내므로, 여기서는 에러 처리만 합니다
-    await connectWallet(req, res);
-  } catch (error) {
-    console.error('Error connecting wallet:', error);
-    // 이미 응답이 보내졌는지 확인
-    if (!res.headersSent) {
-      return res.status(500).json({
-        success: false,
-        error: 'Failed to connect wallet'
-      });
-    }
+    console.log(response);
+    res.json({
+      success: true,
+      originalData: response.data,
+    });
+
+  }catch (error: any) {
+    console.error('error:', error.response?.data || error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch funds from Dappradar',
+      details: error.response?.data || error.message
+    });
+  }
+});
+
+// bring investor data through crypto rank api
+app.get('/funds', async (req, res) => {
+  try {
+    const response = await axios.get('https://api.cryptorank.io/v2/funds/map', {
+      headers: {
+        'X-Api-Key' : process.env.CRYPTO_RANK_API_KEY!
+      },
+      params: {
+      }
+    });     
+
+    const allFunds: Fund[] = response.data.data;
+    // id가 1인 펀드만 추출
+    const fundWithId0 = allFunds.find(fund => fund.id === 1);
+    const shortData = 'explain me about the investor\n' + JSON.stringify(fundWithId0);
+    console.log('data(string)\n', shortData);
+
+    // response를 AI에게 전달
+    const DeepSeek_Addr = '0x3feE5a4dd5FDb8a32dDA97Bed899830605dBD9D3';
+    await brokerService.settleFee(DeepSeek_Addr, 0.000000000000000559);
+
+    console.log('waiting for ai response . . .');
+    const aiResponse = await brokerService.sendQuery(
+      DeepSeek_Addr,
+      shortData
+    );
+
+    console.log('AI response:', aiResponse);
+
+    res.json({
+      success: true,
+      originalData: aiResponse.content,
+    });
+  } catch (error: any) {
+    console.error('error:', error.response?.data || error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch funds from CryptoRank',
+      details: error.response?.data || error.message
+    });
   }
 });
 
@@ -139,6 +243,7 @@ const startServer = async () => {
     process.exit(1);
   }
 };
+
 
 // Start the application
 startServer();
