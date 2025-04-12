@@ -132,7 +132,7 @@ export const listServices = async (req: Request, res: Response) => {
 export const sendQuery = async (req: Request, res: Response) => {
   try {
     
-    const { providerAddress, query, fallbackFee } = req.body;
+    const { providerAddress, prompt, query, fallbackFee } = req.body;
     
     if (!providerAddress) {
       return res.status(400).json({
@@ -159,7 +159,7 @@ export const sendQuery = async (req: Request, res: Response) => {
       }
     }
     
-    const result = await brokerService.sendQuery(providerAddress, query, parsedFallbackFee);
+    const result = await brokerService.sendQuery(providerAddress, prompt, query, parsedFallbackFee);
     
     // Convert BigInt values to strings
     const serializedResult = convertBigIntToString(result);

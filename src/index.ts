@@ -40,6 +40,10 @@ app.use(`${apiPrefix}/account`, accountRoutes);
 app.use(`${apiPrefix}/services`, serviceRoutes);
 app.use(`${apiPrefix}/wallet`, walletRoutes);
 
+// AI model address
+const DeepSeek_Addr = '0x3feE5a4dd5FDb8a32dDA97Bed899830605dBD9D3';
+
+
 // you can check available 0g AI services
 app.get('/tmp', async (req, res) => {
   try {
@@ -118,13 +122,18 @@ app.get('/', async (req, res) => {
 
 // AI query 잘 가는지 테스트
 app.get('/test', async (req, res) => {
-  const DeepSeek_Addr = '0x3feE5a4dd5FDb8a32dDA97Bed899830605dBD9D3';
-
   await brokerService.settleFee(DeepSeek_Addr, 0.000000000000000159);
   console.log('fee settled');
+
+  // prompt 문자열 (현재 하드코딩)
+  const promptData = 'say I am busy for every hello';
+  // 질문 문자열 (현재 하드코딩)
+  const queryData = 'hello';
+
   const aiResponse = await brokerService.sendQuery(
     DeepSeek_Addr,
-    'hello'
+    promptData,
+    queryData
   );
   console.log('AI response:', aiResponse);
   res.json({
@@ -190,12 +199,14 @@ app.get('/funds', async (req, res) => {
     console.log('data(string)\n', shortData);
 
     // response를 AI에게 전달
-    const DeepSeek_Addr = '0x3feE5a4dd5FDb8a32dDA97Bed899830605dBD9D3';
     await brokerService.settleFee(DeepSeek_Addr, 0.000000000000000559);
 
     console.log('waiting for ai response . . .');
+
+    const promptData = 'say I am busy for every hello';
     const aiResponse = await brokerService.sendQuery(
       DeepSeek_Addr,
+      promptData,
       shortData
     );
 

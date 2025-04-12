@@ -124,12 +124,13 @@ class BrokerService {
   /**
    * Send a query to an AI service
    * @param providerAddress Provider address
+   * @param prompt Prompt text
    * @param query Query text
    * @param fallbackFee Optional fallback fee
    */
-  async sendQuery(providerAddress: string, query: string, fallbackFee?: number): Promise<any> {
+  async sendQuery(providerAddress: string, prompt:string, query: string, fallbackFee?: number): Promise<any> {
     await this.ensureInitialized();
-    
+
     try {
       // Get the service metadata
       const { endpoint, model } = await this.broker!.inference.getServiceMetadata(providerAddress);
@@ -138,7 +139,7 @@ class BrokerService {
       console.log(endpoint, model);
 
       // Get headers for authentication
-      const headers = await this.broker!.inference.getRequestHeaders(providerAddress, query);
+      const headers = await this.broker!.inference.getRequestHeaders(providerAddress, query + prompt + prompt);
       
       // Create OpenAI client with the service URL
       const openai = new OpenAI({
@@ -151,8 +152,8 @@ class BrokerService {
       Object.entries(headers).forEach(([key, value]) => {
         if (typeof value === 'string') {
           // for debugging
-          console.log(key, value);
           requestHeaders[key] = value;
+          console.log(key, value);
         }
       });
       
@@ -160,7 +161,7 @@ class BrokerService {
       const completion = await openai.chat.completions.create(
         {
           messages: [
-            { role: "system", content: "{프롬프트}" },  
+            { role: "system", content: prompt },  
             { role: "user", content: query }
           ],
           model, // Use the model from metadata
