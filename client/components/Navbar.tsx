@@ -1,24 +1,24 @@
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import { Disclosure, Menu, Transition } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon, WalletIcon } from '@heroicons/react/24/outline';
-import { Fragment } from 'react';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { Disclosure, Menu, Transition } from "@headlessui/react";
+import { Bars3Icon, XMarkIcon, WalletIcon } from "@heroicons/react/24/outline";
+import { Fragment } from "react";
 
 function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(" ");
 }
 
 const navigation = [
-  { name: 'Dashboard', href: '/' },
-  { name: 'Create', href: '/create' },
-  { name: 'Invest', href: '/invest' },
+  { name: "Dashboard", href: "/" },
+  { name: "Create", href: "/create" },
+  { name: "Invest", href: "/invest" },
 ];
 
 export default function Navbar() {
   const router = useRouter();
   const [walletConnected, setWalletConnected] = useState(false);
-  const [walletAddress, setWalletAddress] = useState('');
+  const [walletAddress, setWalletAddress] = useState("");
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -29,28 +29,35 @@ export default function Navbar() {
       }
     };
 
-    document.addEventListener('scroll', handleScroll);
+    document.addEventListener("scroll", handleScroll);
     return () => {
-      document.removeEventListener('scroll', handleScroll);
+      document.removeEventListener("scroll", handleScroll);
     };
   }, [scrolled]);
 
   const handleConnect = () => {
     // Mock wallet connection
     setWalletConnected(true);
-    setWalletAddress('0x' + Math.random().toString(16).substring(2, 10) + '...' + Math.random().toString(16).substring(2, 6));
+    setWalletAddress(
+      "0x" +
+        Math.random().toString(16).substring(2, 10) +
+        "..." +
+        Math.random().toString(16).substring(2, 6)
+    );
   };
 
   const handleDisconnect = () => {
     setWalletConnected(false);
-    setWalletAddress('');
+    setWalletAddress("");
   };
 
   return (
     <Disclosure
       as="nav"
       className={`fixed w-full z-50 transition-all duration-300 ${
-        scrolled ? 'bg-[#0A0A0A]/95 backdrop-blur-md shadow-md' : 'bg-transparent'
+        scrolled
+          ? "bg-[#0A0A0A]/95 backdrop-blur-md shadow-md"
+          : "bg-transparent"
       }`}
     >
       {({ open }) => (
@@ -61,10 +68,14 @@ export default function Navbar() {
                 <div className="flex flex-shrink-0 items-center">
                   <div className="relative w-8 h-8 mr-2">
                     <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#00F5A0] to-[#00D9F5] opacity-70"></div>
-                    <div className="relative flex items-center justify-center w-full h-full rounded-full bg-[#1A1A1A] text-xl font-bold text-white">I</div>
+                    <div className="relative flex items-center justify-center w-full h-full rounded-full bg-[#1A1A1A] text-xl font-bold text-white">
+                      I
+                    </div>
                   </div>
                   <div className="hidden sm:flex sm:items-center">
-                    <span className="text-xl font-bold gradient-text">Investor Launchpad</span>
+                    <span className="text-xl font-bold gradient-text">
+                      Investor Launchpad
+                    </span>
                     <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-[#00F5A0]/10 text-[#00F5A0] border border-[#00F5A0]/20">
                       BETA
                     </span>
@@ -77,11 +88,13 @@ export default function Navbar() {
                       href={item.href}
                       className={classNames(
                         router.pathname === item.href
-                          ? 'gradient-text font-medium'
-                          : 'text-gray-300 hover:text-white hover:bg-[#2A2A2A]/60',
-                        'px-3 py-2 rounded-lg text-sm transition-all duration-150 relative'
+                          ? "gradient-text font-medium"
+                          : "text-gray-300 hover:text-white hover:bg-[#2A2A2A]/60",
+                        "px-3 py-2 rounded-lg text-sm transition-all duration-150 relative"
                       )}
-                      aria-current={router.pathname === item.href ? 'page' : undefined}
+                      aria-current={
+                        router.pathname === item.href ? "page" : undefined
+                      }
                     >
                       {item.name}
                       {router.pathname === item.href && (
@@ -133,8 +146,8 @@ export default function Navbar() {
                               <button
                                 onClick={handleDisconnect}
                                 className={classNames(
-                                  active ? 'bg-[#2A2A2A]' : '',
-                                  'w-full text-left block px-4 py-2 text-sm text-gray-300 hover:text-white'
+                                  active ? "bg-[#2A2A2A]" : "",
+                                  "w-full text-left block px-4 py-2 text-sm text-gray-300 hover:text-white"
                                 )}
                               >
                                 Disconnect
@@ -183,11 +196,13 @@ export default function Navbar() {
                   href={item.href}
                   className={classNames(
                     router.pathname === item.href
-                      ? 'bg-[#2A2A2A]/70 text-white'
-                      : 'text-gray-300 hover:bg-[#2A2A2A] hover:text-white',
-                    'block px-3 py-2 rounded-lg text-base font-medium'
+                      ? "bg-[#2A2A2A]/70 text-white"
+                      : "text-gray-300 hover:bg-[#2A2A2A] hover:text-white",
+                    "block px-3 py-2 rounded-lg text-base font-medium"
                   )}
-                  aria-current={router.pathname === item.href ? 'page' : undefined}
+                  aria-current={
+                    router.pathname === item.href ? "page" : undefined
+                  }
                 >
                   {item.name}
                 </Disclosure.Button>
