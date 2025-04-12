@@ -64,6 +64,9 @@ export default function MyPage() {
     message: string;
     type: "success" | "error";
   } | null>(null);
+  const [isVoting, setIsVoting] = useState(false);
+  const [voteType, setVoteType] = useState<"yes" | "no" | null>(null);
+  const [isCreatingPrompt, setIsCreatingPrompt] = useState(false);
 
   useEffect(() => {
     // Get all investors (AI agents)
@@ -74,7 +77,7 @@ export default function MyPage() {
     const defaultProjects: Project[] = [
       {
         id: "1",
-        name: "Smart City Infrastructure",
+        name: "CodeX",
         category: "Infrastructure",
         description: "IoT solutions for urban development and smart cities",
         allocation: 18,
@@ -85,7 +88,7 @@ export default function MyPage() {
       },
       {
         id: "2",
-        name: "Blockchain Supply Chain",
+        name: "Cambrian Network",
         category: "Logistics",
         description: "Decentralized supply chain management solutions",
         allocation: 41,
@@ -96,7 +99,7 @@ export default function MyPage() {
       },
       {
         id: "3",
-        name: "Sustainable Agriculture Tech",
+        name: "MoonPay",
         category: "Agriculture",
         description:
           "AI-driven solutions for sustainable farming and agriculture",
@@ -176,17 +179,29 @@ export default function MyPage() {
   };
 
   const handleVote = (vote: "yes" | "no") => {
+    // Set the vote type and loading state
+    setVoteType(vote);
+    setIsVoting(true);
+
     // Handle the vote logic here
     console.log(`Voted ${vote} for agent ${selectedAgentForVote?.name}`);
-    setVoteConfirmation({
-      message: `성공적으로 ${vote === "yes" ? "찬성" : "반대"} 투표하였습니다.`,
-      type: "success",
-    });
 
-    // Close modal after a short delay to show the confirmation
+    // Simulate a short delay for the loading state
     setTimeout(() => {
-      closeVoteModal();
-    }, 1500);
+      setVoteConfirmation({
+        message: `성공적으로 ${
+          vote === "yes" ? "찬성" : "반대"
+        } 투표하였습니다.`,
+        type: "success",
+      });
+
+      setIsVoting(false);
+
+      // Close modal after a short delay to show the confirmation
+      setTimeout(() => {
+        closeVoteModal();
+      }, 1500);
+    }, 200);
   };
 
   const openCreatePromptModal = () => {
@@ -208,20 +223,27 @@ export default function MyPage() {
       return;
     }
 
-    console.log("New prompt created:", newPromptText);
-    setPromptCreationConfirmation({
-      message:
-        "프롬프트 업데이트가 성공적으로 생성되었습니다. 심사 후 투표가 진행됩니다.",
-      type: "success",
-    });
+    setIsCreatingPrompt(true);
 
-    // Close modal immediately to show confirmation at top of page
-    closeCreatePromptModal();
-
-    // Clear prompt creation confirmation after a delay
+    // Simulate a short delay for loading effect
     setTimeout(() => {
-      setPromptCreationConfirmation(null);
-    }, 5000);
+      console.log("New prompt created:", newPromptText);
+      setPromptCreationConfirmation({
+        message:
+          "프롬프트 업데이트가 성공적으로 생성되었습니다. 심사 후 투표가 진행됩니다.",
+        type: "success",
+      });
+
+      setIsCreatingPrompt(false);
+
+      // Close modal immediately to show confirmation at top of page
+      closeCreatePromptModal();
+
+      // Clear prompt creation confirmation after a delay
+      setTimeout(() => {
+        setPromptCreationConfirmation(null);
+      }, 5000);
+    }, 200);
   };
 
   return (
@@ -305,18 +327,7 @@ export default function MyPage() {
                                   {formatCurrency(agent.maxInvestmentAmount)}
                                 </p>
                               </div>
-                              <div className="text-right">
-                                <p className="text-gray-400 text-xs">
-                                  Performance
-                                </p>
-                                <p
-                                  className={`font-medium ${getPerformanceColor(
-                                    performance
-                                  )}`}
-                                >
-                                  +{performance.toFixed(2)}%
-                                </p>
-                              </div>
+
                               <ChevronDownIcon
                                 className={`w-5 h-5 text-gray-400 transition-transform ${
                                   selectedAgent === agent.id
@@ -354,20 +365,12 @@ export default function MyPage() {
                                   key={project.id}
                                   className="bg-[#242424] border border-[#333] rounded-lg overflow-hidden"
                                 >
-                                  <div className="px-5 py-4 flex justify-between items-center">
-                                    <h4 className="text-lg font-medium text-white">
+                                  <div className="bg-gradient-to-r from-[#00F5A0]/20 to-[#00D9F5]/20 px-5 py-3 border-b border-[#333]">
+                                    <h4 className="text-white font-bold text-lg">
                                       {project.name}
                                     </h4>
-                                    <span
-                                      className={`px-2 py-1 text-xs rounded-full ${getRiskColor(
-                                        project.riskLevel
-                                      )}`}
-                                    >
-                                      {project.riskLevel}
-                                    </span>
                                   </div>
-
-                                  <div className="px-5 py-3 border-t border-[#333] text-sm text-gray-400">
+                                  <div className="px-5 py-3 border-b border-[#333] text-sm text-gray-400">
                                     {project.category}
                                   </div>
 
@@ -385,17 +388,6 @@ export default function MyPage() {
                                     </div>
 
                                     <div className="space-y-4">
-                                      <div>
-                                        <div className="flex justify-between text-sm mb-1">
-                                          <span className="text-gray-400">
-                                            Expected Return:
-                                          </span>
-                                          <span className="text-green-400">
-                                            {project.expectedReturn}%
-                                          </span>
-                                        </div>
-                                      </div>
-
                                       <div>
                                         <div className="flex justify-between text-sm mb-1">
                                           <span className="text-gray-400">
@@ -520,15 +512,35 @@ export default function MyPage() {
                     <div className="flex space-x-4 mb-6">
                       <button
                         onClick={() => handleVote("yes")}
-                        className="flex-1 bg-green-500/20 hover:bg-green-500/30 text-green-400 hover:text-green-300 font-medium py-3 rounded-lg border border-green-500/20 hover:border-green-500/40 transition-all transform hover:scale-105"
+                        disabled={isVoting}
+                        className={`flex-1 inline-flex items-center justify-center bg-green-500/20 hover:bg-green-500/30 text-green-400 hover:text-green-300 font-medium py-3 rounded-lg border border-green-500/20 hover:border-green-500/40 transition-all transform hover:scale-105 ${
+                          isVoting && voteType === "yes" ? "opacity-75" : ""
+                        }`}
                       >
-                        Vote Yes
+                        {isVoting && voteType === "yes" ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-400 mr-2"></div>
+                            Voting...
+                          </>
+                        ) : (
+                          "Vote Yes"
+                        )}
                       </button>
                       <button
                         onClick={() => handleVote("no")}
-                        className="flex-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 font-medium py-3 rounded-lg border border-red-500/20 hover:border-red-500/40 transition-all transform hover:scale-105"
+                        disabled={isVoting}
+                        className={`flex-1 inline-flex items-center justify-center bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 font-medium py-3 rounded-lg border border-red-500/20 hover:border-red-500/40 transition-all transform hover:scale-105 ${
+                          isVoting && voteType === "no" ? "opacity-75" : ""
+                        }`}
                       >
-                        Vote No
+                        {isVoting && voteType === "no" ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-400 mr-2"></div>
+                            Voting...
+                          </>
+                        ) : (
+                          "Vote No"
+                        )}
                       </button>
                     </div>
 
@@ -614,9 +626,19 @@ export default function MyPage() {
                 <div className="flex justify-end">
                   <button
                     onClick={handleCreatePrompt}
-                    className="bg-gradient-to-r from-[#00F5A0] to-[#00D9F5] text-black font-medium py-2 px-6 rounded-lg transition-all transform hover:scale-105 hover:shadow-glow"
+                    disabled={isCreatingPrompt}
+                    className={`inline-flex items-center justify-center bg-gradient-to-r from-[#00F5A0] to-[#00D9F5] text-black font-medium py-2 px-6 rounded-lg transition-all transform hover:scale-105 hover:shadow-glow ${
+                      isCreatingPrompt ? "opacity-75" : ""
+                    }`}
                   >
-                    Confirm
+                    {isCreatingPrompt ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mr-2"></div>
+                        Creating...
+                      </>
+                    ) : (
+                      "Confirm"
+                    )}
                   </button>
                 </div>
               </div>

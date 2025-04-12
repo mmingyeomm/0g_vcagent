@@ -37,7 +37,7 @@ interface InvestmentOpportunity {
 const allInvestmentOpportunities: InvestmentOpportunity[] = [
   {
     id: "1",
-    name: "AI-Powered Healthcare Platform",
+    name: "0G Labs",
     description:
       "Revolutionary healthcare platform using AI for early disease detection",
     category: "Healthcare",
@@ -52,7 +52,7 @@ const allInvestmentOpportunities: InvestmentOpportunity[] = [
   },
   {
     id: "2",
-    name: "Renewable Energy Storage",
+    name: "BugsCoin",
     description: "Innovative battery technology for renewable energy storage",
     category: "Energy",
     riskLevel: "high",
@@ -66,7 +66,7 @@ const allInvestmentOpportunities: InvestmentOpportunity[] = [
   },
   {
     id: "3",
-    name: "FinTech Payment Solution",
+    name: "DRiP",
     description: "Next-generation payment processing platform",
     category: "Finance",
     riskLevel: "low",
@@ -80,7 +80,7 @@ const allInvestmentOpportunities: InvestmentOpportunity[] = [
   },
   {
     id: "4",
-    name: "Quantum Computing Research",
+    name: "Chronicle",
     description: "Cutting-edge quantum computing technology development",
     category: "Technology",
     riskLevel: "high",
@@ -93,7 +93,7 @@ const allInvestmentOpportunities: InvestmentOpportunity[] = [
   },
   {
     id: "5",
-    name: "Sustainable Agriculture Tech",
+    name: "MoonPay",
     description: "AI-driven solutions for sustainable farming and agriculture",
     category: "Agriculture",
     riskLevel: "medium",
@@ -106,7 +106,7 @@ const allInvestmentOpportunities: InvestmentOpportunity[] = [
   },
   {
     id: "6",
-    name: "Autonomous Vehicle Systems",
+    name: "Octane",
     description: "Next-gen AI systems for autonomous transportation",
     category: "Automotive",
     riskLevel: "high",
@@ -119,7 +119,7 @@ const allInvestmentOpportunities: InvestmentOpportunity[] = [
   },
   {
     id: "7",
-    name: "AR/VR Educational Platform",
+    name: "Babushka",
     description: "Immersive learning experiences through augmented reality",
     category: "Education",
     riskLevel: "medium",
@@ -131,7 +131,7 @@ const allInvestmentOpportunities: InvestmentOpportunity[] = [
   },
   {
     id: "8",
-    name: "Smart City Infrastructure",
+    name: "CodeX",
     description: "IoT solutions for urban development and smart cities",
     category: "Infrastructure",
     riskLevel: "low",
@@ -143,7 +143,7 @@ const allInvestmentOpportunities: InvestmentOpportunity[] = [
   },
   {
     id: "9",
-    name: "Blockchain Supply Chain",
+    name: "Cambrian Network",
     description: "Decentralized supply chain management solutions",
     category: "Logistics",
     riskLevel: "medium",
@@ -155,7 +155,7 @@ const allInvestmentOpportunities: InvestmentOpportunity[] = [
   },
   {
     id: "10",
-    name: "Personalized Medicine Platform",
+    name: "Mediblock",
     description: "AI-powered solutions for personalized healthcare treatments",
     category: "Healthcare",
     riskLevel: "high",
@@ -167,7 +167,7 @@ const allInvestmentOpportunities: InvestmentOpportunity[] = [
   },
   {
     id: "11",
-    name: "Space Technology Ventures",
+    name: "ORO AI",
     description:
       "Innovative technologies for space exploration and satellite systems",
     category: "Aerospace",
@@ -180,7 +180,7 @@ const allInvestmentOpportunities: InvestmentOpportunity[] = [
   },
   {
     id: "12",
-    name: "Cybersecurity Defense Systems",
+    name: "Cybers",
     description: "Advanced security solutions for enterprise protection",
     category: "Security",
     riskLevel: "low",
@@ -212,6 +212,7 @@ export default function Invest() {
     InvestmentOpportunity[]
   >([]);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  const [isInvesting, setIsInvesting] = useState(false);
 
   useEffect(() => {
     // Simulate loading state for a smoother experience
@@ -314,28 +315,34 @@ export default function Invest() {
       return;
     }
 
-    // Add the investment
-    addInvestment({
-      investorId: selectedInvestor,
-      opportunityId: selectedOpportunity,
-      amount: investmentAmount,
-    });
+    setIsInvesting(true);
 
-    // Reset and show success message
-    setInvestmentModal(false);
+    // Simulate a short delay to show the loading state
+    setTimeout(() => {
+      // Add the investment
+      addInvestment({
+        investorId: selectedInvestor,
+        opportunityId: selectedOpportunity,
+        amount: investmentAmount,
+      });
 
-    // Special message for AI Agent investment
-    if (selectedOpportunity === "ai-agent") {
-      setSuccessMessage(
-        "🎉 Congratulations! You've successfully invested in our AI Agent technology. Welcome to the future! Visit My Page to view your investments."
-      );
-    } else {
-      setSuccessMessage(
-        "Investment successfully added to portfolio! Visit My Page to view your investments."
-      );
-    }
+      // Reset and show success message
+      setInvestmentModal(false);
+      setIsInvesting(false);
 
-    setTimeout(() => setSuccessMessage(""), 4000);
+      // Special message for AI Agent investment
+      if (selectedOpportunity === "ai-agent") {
+        setSuccessMessage(
+          "🎉 Congratulations! You've successfully invested in our AI Agent technology. Welcome to the future! Visit My Page to view your investments."
+        );
+      } else {
+        setSuccessMessage(
+          "Investment successfully added to portfolio! Visit My Page to view your investments."
+        );
+      }
+
+      setTimeout(() => setSuccessMessage(""), 4000);
+    }, 200); // Short delay for loading effect
   };
 
   const handleViewDetails = (investorId: string, e: React.MouseEvent) => {
@@ -358,22 +365,6 @@ export default function Invest() {
       default:
         return "bg-gray-500/10 text-gray-400 border border-gray-500/20";
     }
-  };
-
-  const getRandomFigure = (min: number, max: number) => {
-    return +(Math.random() * (max - min) + min).toFixed(2);
-  };
-
-  // Generate mock performance metrics for each investor
-  const getPerformanceMetrics = (investorId: string) => {
-    // Use investor ID to seed the random number so it's consistent
-    const seed = investorId.charCodeAt(0) / 255;
-
-    return {
-      dailyChange: getRandomFigure(-5, 15) + seed * 10,
-      weeklyChange: getRandomFigure(-10, 30) + seed * 20,
-      monthlyChange: getRandomFigure(-15, 45) + seed * 30,
-    };
   };
 
   // Get the selected investor's portfolio
@@ -478,14 +469,12 @@ export default function Invest() {
                     <th>Focus</th>
                     <th>Min Amount</th>
                     <th>Max Amount</th>
-                    <th>24H Change</th>
                     <th>Created</th>
                     <th></th>
                   </tr>
                 </thead>
                 <tbody>
                   {investors.map((investor) => {
-                    const metrics = getPerformanceMetrics(investor.id);
                     return (
                       <tr
                         key={investor.id}
@@ -550,18 +539,6 @@ export default function Invest() {
                         </td>
                         <td className="text-gray-300">
                           ${investor.maxInvestmentAmount.toLocaleString()}
-                        </td>
-                        <td>
-                          <span
-                            className={
-                              metrics.dailyChange >= 0
-                                ? "text-green-400"
-                                : "text-red-400"
-                            }
-                          >
-                            {metrics.dailyChange >= 0 ? "+" : ""}
-                            {metrics.dailyChange.toFixed(2)}%
-                          </span>
                         </td>
                         <td className="text-gray-400">
                           {new Date(investor.createdAt).toLocaleDateString()}
@@ -671,6 +648,11 @@ export default function Invest() {
                 {(expandedSection === "opportunities" ||
                   expandedSection === "both") && (
                   <div className="p-6">
+                    {/* Add Investment Projects heading */}
+                    <h2 className="text-2xl font-bold text-white mb-6">
+                      Investment Projects
+                    </h2>
+
                     {/* 투자 비율 요약 섹션 추가 */}
                     <div className="mb-6">
                       <h3 className="text-white text-lg font-semibold mb-3">
@@ -700,7 +682,7 @@ export default function Invest() {
                                           colors[index % colors.length]
                                         } mr-2`}
                                       ></div>
-                                      <span className="text-white text-sm">
+                                      <span className="text-white text-sm font-semibold">
                                         {opp.name}
                                       </span>
                                     </div>
@@ -724,109 +706,102 @@ export default function Invest() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {agentOpportunities.map((opportunity, index) => {
-                        // 색상 배열
-                        const colors = [
-                          "from-[#00F5A0] to-[#00D9F5]",
-                          "from-purple-500 to-blue-500",
-                          "from-yellow-500 to-orange-500",
-                        ];
+                    <div className="mt-8">
+                      <h3 className="text-white text-lg font-semibold mb-4">
+                        Project Details
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {agentOpportunities.map((opportunity, index) => {
+                          // 색상 배열
+                          const colors = [
+                            "from-[#00F5A0] to-[#00D9F5]",
+                            "from-purple-500 to-blue-500",
+                            "from-yellow-500 to-orange-500",
+                          ];
 
-                        return (
-                          <div
-                            key={opportunity.id}
-                            className="bg-[#222] border border-[#2A2A2A] rounded-xl overflow-hidden hover:border-[#00F5A0]/50 transition-all duration-300"
-                          >
-                            <div className="p-6">
-                              <div className="flex justify-between">
-                                <div>
-                                  <h3 className="text-white font-semibold text-lg">
-                                    {opportunity.name}
-                                  </h3>
-                                  <p className="text-gray-400 text-sm mb-2">
-                                    {opportunity.category}
-                                  </p>
-                                </div>
-                                <span
-                                  className={`h-fit px-2 py-1 text-xs rounded-full ${getRiskColor(
-                                    opportunity.riskLevel
-                                  )}`}
-                                >
-                                  {opportunity.riskLevel}
-                                </span>
-                              </div>
-
-                              {/* 비율 표시 배지 추가 */}
+                          return (
+                            <div
+                              key={opportunity.id}
+                              className="bg-[#222] border border-[#2A2A2A] rounded-xl overflow-hidden hover:border-[#00F5A0]/50 transition-all duration-300"
+                            >
                               <div
-                                className={`mt-2 inline-block px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r ${
+                                className={`bg-gradient-to-r ${
                                   colors[index % colors.length]
-                                } bg-opacity-10 text-white`}
+                                } bg-opacity-20 px-4 py-3 border-b border-[#2A2A2A]`}
                               >
-                                <span className="text-white font-medium">
-                                  Allocation:{" "}
-                                  {opportunity.allocation ||
-                                    Math.floor(100 / agentOpportunities.length)}
-                                  %
-                                </span>
+                                <h3 className="text-white font-bold text-xl">
+                                  {opportunity.name}
+                                </h3>
+                                <p className="text-gray-300 text-sm">
+                                  {opportunity.category}
+                                </p>
                               </div>
-
-                              <p className="text-gray-300 text-sm mt-4">
-                                {opportunity.description}
-                              </p>
-
-                              <div className="mt-6 space-y-3">
-                                <div className="flex justify-between">
-                                  <span className="text-gray-400">
-                                    Expected Return:
-                                  </span>
-                                  <span className="text-green-400 font-medium">
-                                    {opportunity.expectedReturn}%
-                                  </span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-gray-400">
-                                    Min Investment:
-                                  </span>
-                                  <span className="text-white">
-                                    $
-                                    {opportunity.minInvestment.toLocaleString()}
-                                  </span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-gray-400">
-                                    Progress:
-                                  </span>
-                                  <span className="text-white">
-                                    {Math.round(
-                                      (opportunity.totalRaised /
-                                        opportunity.targetAmount) *
-                                        100
-                                    )}
+                              <div className="p-6">
+                                {/* 비율 표시 배지 추가 */}
+                                <div
+                                  className={`inline-block px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r ${
+                                    colors[index % colors.length]
+                                  } bg-opacity-10 text-white`}
+                                >
+                                  <span className="text-white font-medium">
+                                    Allocation:{" "}
+                                    {opportunity.allocation ||
+                                      Math.floor(
+                                        100 / agentOpportunities.length
+                                      )}
                                     %
                                   </span>
                                 </div>
-                              </div>
 
-                              <div className="mt-4 w-full bg-gray-700 rounded-full h-2">
-                                <div
-                                  className="h-2 rounded-full bg-gradient-to-r from-[#00F5A0] to-[#00D9F5]"
-                                  style={{
-                                    width: `${Math.min(
-                                      100,
-                                      Math.round(
+                                <p className="text-gray-300 text-sm mt-4">
+                                  {opportunity.description}
+                                </p>
+
+                                <div className="mt-6 space-y-3">
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-400">
+                                      Min Investment:
+                                    </span>
+                                    <span className="text-white">
+                                      $
+                                      {opportunity.minInvestment.toLocaleString()}
+                                    </span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-400">
+                                      Progress:
+                                    </span>
+                                    <span className="text-white">
+                                      {Math.round(
                                         (opportunity.totalRaised /
                                           opportunity.targetAmount) *
                                           100
-                                      )
-                                    )}%`,
-                                  }}
-                                ></div>
+                                      )}
+                                      %
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="mt-4 w-full bg-gray-700 rounded-full h-2">
+                                  <div
+                                    className="h-2 rounded-full bg-gradient-to-r from-[#00F5A0] to-[#00D9F5]"
+                                    style={{
+                                      width: `${Math.min(
+                                        100,
+                                        Math.round(
+                                          (opportunity.totalRaised /
+                                            opportunity.targetAmount) *
+                                            100
+                                        )
+                                      )}%`,
+                                    }}
+                                  ></div>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -896,14 +871,6 @@ export default function Invest() {
                           revolutionizing markets worldwide.
                         </p>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                          <div className="bg-[#242424] rounded-lg p-3">
-                            <p className="text-gray-400 text-sm">
-                              Expected Return
-                            </p>
-                            <p className="text-[#00F5A0] font-bold text-xl">
-                              42%
-                            </p>
-                          </div>
                           <div className="bg-[#242424] rounded-lg p-3">
                             <p className="text-gray-400 text-sm">Risk Level</p>
                             <p className="text-yellow-400 font-medium">
@@ -1026,13 +993,21 @@ export default function Invest() {
                 </button>
                 <button
                   onClick={handleInvest}
-                  className={`px-4 py-2 font-semibold rounded-lg transition-all duration-300 ${
+                  disabled={isInvesting}
+                  className={`inline-flex items-center justify-center px-4 py-2 font-semibold rounded-lg transition-all duration-300 ${
                     selectedOpportunity === "ai-agent"
                       ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:shadow-glow"
                       : "bg-gradient-to-r from-[#00F5A0] to-[#00D9F5] text-black hover:from-[#00D9F5] hover:to-[#00F5A0]"
-                  }`}
+                  } ${isInvesting ? "opacity-75" : ""}`}
                 >
-                  Confirm Investment
+                  {isInvesting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Investing...
+                    </>
+                  ) : (
+                    "Confirm Investment"
+                  )}
                 </button>
               </div>
             </div>
