@@ -1,32 +1,31 @@
-import React, { ReactNode } from "react";
-import Link from "next/link";
-import Head from "next/head";
+import { ReactNode } from 'react';
+import Navbar from './Navbar';
+import toast, { Toaster } from 'react-hot-toast';
 
-type Props = {
-  children?: ReactNode;
-  title?: string;
-};
+interface LayoutProps {
+  children: ReactNode;
+}
 
-const Layout = ({ children, title = "This is the default title" }: Props) => (
-  <div>
-    <Head>
-      <title>{title}</title>
-      <meta charSet="utf-8" />
-      <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-    </Head>
-    <header>
-      <nav>
-        <Link href="/">Home</Link> | <Link href="/about">About</Link> |{" "}
-        <Link href="/users">Users List</Link> |{" "}
-        <a href="/api/users">Users API</a>
-      </nav>
-    </header>
-    {children}
-    <footer>
-      <hr />
-      <span>I'm here to stay (Footer)</span>
-    </footer>
-  </div>
-);
-
-export default Layout;
+export default function Layout({ children }: LayoutProps) {
+  return (
+    <div className="min-h-screen bg-[#0A0A0A] text-white">
+      <div className="fixed inset-0 bg-gradient-to-br from-[#1A1A1A] via-[#0A0A0A] to-[#2A2A2A] opacity-100" />
+      <div className="relative">
+        <Navbar />
+        <main className="container mx-auto px-4 py-8">
+          {children}
+        </main>
+        <Toaster 
+          position="top-right"
+          toastOptions={{
+            style: {
+              background: '#1A1A1A',
+              color: '#fff',
+              border: '1px solid #2A2A2A',
+            },
+          }}
+        />
+      </div>
+    </div>
+  );
+}

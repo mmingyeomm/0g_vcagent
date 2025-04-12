@@ -1,0 +1,11 @@
+we are making a Investor Launchpad where if we create automated Investor 
+It will invest the assets for users 
+
+based on the characteristics of the investor that we created it will choose 
+which item to invest in by itself and do it 
+
+We can choose the characteristics of the investor when we create one
+
+
+now  remake frontend
+
