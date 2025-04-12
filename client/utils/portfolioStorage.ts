@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from 'uuid';
-import { getInvestorById } from './investorStorage';
+import { v4 as uuidv4 } from "uuid";
+import { getInvestorById } from "./investorStorage";
 
 export interface Investment {
   id: string;
@@ -19,14 +19,14 @@ export interface Portfolio {
   overallPerformance: number;
 }
 
-const STORAGE_KEY = 'investments';
+const STORAGE_KEY = "investments";
 
 // Get all investments
 export function getInvestments(): Investment[] {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return [];
   }
-  
+
   const storedInvestments = localStorage.getItem(STORAGE_KEY);
   if (!storedInvestments) {
     return [];
@@ -40,29 +40,53 @@ export function getInvestments(): Investment[] {
 }
 
 // Add a new investment
-export function addInvestment(investment: Omit<Investment, 'id' | 'date' | 'currentValue' | 'performancePercentage'>): Investment {
+export function addInvestment(
+  investment: Omit<
+    Investment,
+    "id" | "date" | "currentValue" | "performancePercentage"
+  >
+): Investment {
+  const investments = getInvestments();
+
+  // Check if this investment already exists
+  const existingInvestmentIndex = investments.findIndex(
+    (inv) =>
+      inv.investorId === investment.investorId &&
+      inv.opportunityId === investment.opportunityId
+  );
+
   const newInvestment = {
     ...investment,
-    id: uuidv4(),
+    id:
+      existingInvestmentIndex >= 0
+        ? investments[existingInvestmentIndex].id
+        : uuidv4(),
     date: new Date().toISOString(),
     currentValue: investment.amount * (1 + Math.random() * 0.3), // Simulate current value
     performancePercentage: Math.random() * 30 - 10, // Random performance between -10% and +20%
   };
 
-  const investments = getInvestments();
-  investments.push(newInvestment);
-  
-  if (typeof window !== 'undefined') {
+  if (existingInvestmentIndex >= 0) {
+    // Update existing investment
+    investments[existingInvestmentIndex] = newInvestment;
+  } else {
+    // Add new investment
+    investments.push(newInvestment);
+  }
+
+  if (typeof window !== "undefined") {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(investments));
   }
-  
+
   return newInvestment;
 }
 
 // Get investments for a specific investor
 export function getInvestmentsByInvestorId(investorId: string): Investment[] {
   const investments = getInvestments();
-  return investments.filter(investment => investment.investorId === investorId);
+  return investments.filter(
+    (investment) => investment.investorId === investorId
+  );
 }
 
 // Get portfolio for a specific investor
@@ -74,16 +98,20 @@ export function getPortfolioByInvestorId(investorId: string): Portfolio {
 
   const investments = getInvestmentsByInvestorId(investorId);
   const totalInvested = investments.reduce((sum, inv) => sum + inv.amount, 0);
-  const totalCurrentValue = investments.reduce((sum, inv) => sum + inv.currentValue, 0);
-  const overallPerformance = totalInvested > 0 
-    ? ((totalCurrentValue - totalInvested) / totalInvested) * 100
-    : 0;
+  const totalCurrentValue = investments.reduce(
+    (sum, inv) => sum + inv.currentValue,
+    0
+  );
+  const overallPerformance =
+    totalInvested > 0
+      ? ((totalCurrentValue - totalInvested) / totalInvested) * 100
+      : 0;
 
   return {
     investorId,
     investments,
     totalInvested,
     totalCurrentValue,
-    overallPerformance
+    overallPerformance,
   };
-} 
+}

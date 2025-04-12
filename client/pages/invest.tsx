@@ -48,6 +48,7 @@ const allInvestmentOpportunities: InvestmentOpportunity[] = [
     targetAmount: 5000000,
     deadline: "2024-06-30",
     allocation: 30, // 30% 할당
+    agentId: "healthcare-ai-1", // Add agent ID
   },
   {
     id: "2",
@@ -61,6 +62,7 @@ const allInvestmentOpportunities: InvestmentOpportunity[] = [
     targetAmount: 3000000,
     deadline: "2024-07-15",
     allocation: 40, // 40% 할당
+    agentId: "energy-ai-1", // Add agent ID
   },
   {
     id: "3",
@@ -74,6 +76,7 @@ const allInvestmentOpportunities: InvestmentOpportunity[] = [
     targetAmount: 5000000,
     deadline: "2024-08-01",
     allocation: 30, // 30% 할당
+    agentId: "fintech-ai-1", // Add agent ID
   },
   {
     id: "4",
@@ -86,6 +89,7 @@ const allInvestmentOpportunities: InvestmentOpportunity[] = [
     totalRaised: 3700000,
     targetAmount: 8000000,
     deadline: "2024-09-15",
+    agentId: "quantum-ai-1", // Add agent ID
   },
   {
     id: "5",
@@ -98,6 +102,7 @@ const allInvestmentOpportunities: InvestmentOpportunity[] = [
     totalRaised: 2200000,
     targetAmount: 4500000,
     deadline: "2024-07-30",
+    agentId: "agri-ai-1", // Add agent ID
   },
   {
     id: "6",
@@ -110,6 +115,7 @@ const allInvestmentOpportunities: InvestmentOpportunity[] = [
     totalRaised: 5500000,
     targetAmount: 10000000,
     deadline: "2024-10-15",
+    agentId: "auto-ai-1", // Add agent ID
   },
   {
     id: "7",
@@ -321,13 +327,15 @@ export default function Invest() {
     // Special message for AI Agent investment
     if (selectedOpportunity === "ai-agent") {
       setSuccessMessage(
-        "🎉 Congratulations! You've successfully invested in our AI Agent technology. Welcome to the future!"
+        "🎉 Congratulations! You've successfully invested in our AI Agent technology. Welcome to the future! Visit My Page to view your investments."
       );
     } else {
-      setSuccessMessage("Investment successfully added to portfolio!");
+      setSuccessMessage(
+        "Investment successfully added to portfolio! Visit My Page to view your investments."
+      );
     }
 
-    setTimeout(() => setSuccessMessage(""), 3000);
+    setTimeout(() => setSuccessMessage(""), 4000);
   };
 
   const handleViewDetails = (investorId: string, e: React.MouseEvent) => {

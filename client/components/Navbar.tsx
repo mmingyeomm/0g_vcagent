@@ -13,6 +13,7 @@ const navigation = [
   { name: "Dashboard", href: "/" },
   { name: "Create", href: "/create" },
   { name: "Invest", href: "/invest" },
+  { name: "My Page", href: "/mypage" },
 ];
 
 export default function Navbar() {
